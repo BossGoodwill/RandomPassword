@@ -63,7 +63,7 @@ def generar_similar():
         messagebox.showerror("Error", "Introduce una longitud válida.")
         return
 
-    base_passwords = entry_base_password.get().splitlines()  # Obtener todas las contraseñas de las líneas
+    base_passwords = entry_base_password.get("1.0", tk.END).strip().splitlines()
     if not base_passwords:
         messagebox.showerror("Error", "Introduce al menos una contraseña base.")
         return
@@ -89,9 +89,19 @@ def generar_similar():
 
         resultado = (modificada + extra)[:longitud]
         resultado_final.append(resultado)
-    
-    # Mostrar los resultados como un listado
-    label_similar_resultado.config(text="\n".join(resultado_final))
+
+    text_similar_resultado.delete("1.0", tk.END)
+    text_similar_resultado.insert(tk.END, "\n".join(resultado_final))
+
+def copiar_similares():
+    texto = text_similar_resultado.get("1.0", tk.END).strip()
+    if texto:
+        ventana.clipboard_clear()
+        ventana.clipboard_append(texto)
+        ventana.update()
+        messagebox.showinfo("Copiado", "Contraseñas copiadas al portapapeles.")
+    else:
+        messagebox.showwarning("Vacío", "No hay contraseñas para copiar.")
 
 # -------------------- Interfaz gráfica --------------------
 ventana = tk.Tk()
@@ -167,8 +177,9 @@ tk.Checkbutton(frame_similar, text="Añadir Números", variable=var_sim_num).pac
 tk.Checkbutton(frame_similar, text="Añadir Símbolos", variable=var_sim_sym).pack()
 
 tk.Button(frame_similar, text="Generar Similares", command=generar_similar).pack(pady=5)
-label_similar_resultado = tk.Label(frame_similar, font=("Consolas", 14))
-label_similar_resultado.pack(pady=5)
-tk.Button(frame_similar, text="Copiar", command=lambda: copiar_a_portapapeles(label_similar_resultado)).pack()
+
+text_similar_resultado = tk.Text(frame_similar, height=5, font=("Consolas", 12))
+text_similar_resultado.pack(pady=5)
+tk.Button(frame_similar, text="Copiar", command=copiar_similares).pack()
 
 ventana.mainloop()
